@@ -1,0 +1,123 @@
+st.session_state.template = f"You are an assistant for question-answering tasks. Please use the chat history: {history} to talk."
+    
+st.session_state.hint = """Use the following pieces of retrieved context to answer the question. 
+              If you don't know the answer, just say that you don't know. 
+              Use less than 100 words maximum and keep the answer concise. 
+              If you cannot find context in conversation history, just give general answer, .
+              Question: {question} 
+              Context: {context} 
+               Answer:
+           """
+
+st.session_state.datastory = '''
+You are working with the dataset located at C:\streamlit_app\retail.xlsx to conduct data analytics, including model building. To read the data into a Python Pandas DataFrame, use the following code snippet:
+
+import pandas as pd
+df = pd.read_excel(r'C:\streamlit_app\retail.xlsx')
+Please be aware that this dataset pertains to online retail data, encompassing customer transactions involving various products over a two-year period. After loading the data, examine the columns and their corresponding data types in the Pandas DataFrame:
+
+Invoice: object
+StockCode: object
+Description: object
+Quantity: int64
+InvoiceDate: datetime64[ns]
+Price: float64
+Customer ID: float64
+Country: object
+
+Your responsibility is to utilize this dataset for any data analytics study or modeling. It's imperative to acknowledge that the data might not be entirely clean, possibly containing missing or duplicated entries. When responding to queries, ensure to consider these potential data anomalies.'''
+
+st.session_state.question_hint = '''
+ if my following question is nothing to do with the data file retail.xlsx or data frame that comes from retail.xlsx,
+ then simply provide answer text message.You need to provide Python code only when you need to generate result
+ from analyzing the data retail.xlsx, Also, important thing: if you are required to do analysis not including
+ building or creating predictive models, then only output pure Python code, do not use any fake example, 
+ do not output any description and explanation. important thing: do not include script in reading data file 
+ into pandas df to get a dataframe. If I ask for  chart, plot such as bar chart, you should also provide pure python
+ code that can create the data frame to be used for creating chart, but for creating chart, you should use streamlit plotting way, 
+ such as: st.sidebar.bar_chart(result, height = 260) at the end of code, it could be other chart such as 
+ st.line_chart depending on my request. '''
+
+st.session_state.specification = '''
+, important: if you are required to provide code, please assign the variable of the resulting data container (such as dataframe, tuple, list, string or numeric variable) the name as 'result'. '''
+
+st.session_state.modelconfirm = 'Before building this model, I need you first confirm the following information'
+
+st.session_state.modelpara_hint = " If the user does not explicitly mention 'model' or 'modeling' in the question, refrain from constructing a model. However, if the user explicitly requests you to build or create predictive models, respond precisely as follows: " + st.session_state.modelconfirm + ":"
+
+st.session_state.model_para_instruction = '''
+Set these variables to customize your model building process \n
+#Remove rows with missing data in these columns \n
+not_null_columns = ['Invoice', 'Customer ID', 'StockCode', 'Description'] \n
+#Remove rows with negative values in this column \n
+not_negative_columns = ['Quantity'] \n
+#Identify duplicate rows based on these columns \n
+dup_columns = ['Invoice', 'StockCode', 'Description', 'Quantity', 'InvoiceDate'] \n 
+#Set the starting date for model performance evaluation \n
+performance_date = '2010-07-01' \n
+#Number of days in the model performance window \n
+performance_days = 30 \n
+#List of days used to create new features in the model \n
+days_lst = [10, 30, 50] \n
+#Threshold for selecting significant features based on correlation coefficient \n
+cor_thresh = 0.02 \n
+#Proportion of data used for testing in model building and validation \n
+test_ratio = 0.3 \n
+#Random seed for data splitting \n
+random_st = 42 \n
+
+Note: These variables have default values as shown. Copy and paste the followings to keep defaults.To make changes, only modify the values while keeping the variable names unchanged. Ensure changes are meaningful, e.g., columns must exist in the dataset. \n
+    
+###Here are the default settings#######    \n
+
+not_null_columns = ['Invoice', 'Customer ID', 'StockCode', 'Description']; \n
+not_negative_columns = ['Quantity'];\n
+dup_columns = ['Invoice', 'StockCode', 'Description', 'Quantity', 'InvoiceDate'];\n
+[performance_date,performance_days] =  ['2010-07-01', 30];\n
+days_lst = [10, 30, 50];\n 
+cor_thresh = 0.02;\n
+[test_ratio,random_st] = 0.3, 42;\n
+
+#########################################    
+'''
+
+st.session_state.default_model_para = '''
+not_null_columns = ['Invoice', 'Customer ID', 'StockCode', 'Description'] 
+not_negative_columns = ['Quantity'] 
+dup_columns = ['Invoice', 'StockCode', 'Description', 'Quantity', 'InvoiceDate'] 
+[performance_date,performance_days] =  ['2010-07-01', 30] 
+days_lst = [10, 30, 50] 
+cor_thresh = 0.02 
+[test_ratio,random_st] = 0.3, 42 
+'''
+
+st.session_state.modelpara_names = '''
+not_null_columns,not_negative_columns,dup_columns,performance_date,performance_days,days_lst,cor_thresh,test_ratio,random_st
+'''
+
+st.session_state.get_modelpara =  ''' .Please only extract the pure Python code without any explanation text, 
+important: do not include any import statements and do not read data using
+ df = pd.read_csv() in Python script, just like below: '''
+
+st.session_state.suggestion = "See the result, only say Yes if you need my suggestion, say No if you don't, otherwise I will treat your saying as a question.. "  
+
+st.session_state.question_hintyes = " Based on the coversational histry and the recent data result after running Python code "
+
+st.session_state.specificationyes = "you are required to provide suggestion or explanation based on the data result of the python code"
+
+st.session_state.question_hintno = " No problem, let's keep chatting "
+
+st.session_state.importread = r'''
+import pandas as pd
+import numpy as np
+import lightgbm as lgb
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import roc_auc_score, roc_curve
+import matplotlib.pyplot as plt
+import streamlit as st
+from scipy.stats import ks_2samp
+import datetime
+from datetime import datetime, timedelta
+df = pd.read_excel(r'C:\streamlit_app\retail.xlsx')
+'''
+
